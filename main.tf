@@ -2,17 +2,9 @@ provider "aws" {
   region = "ap-south-1"
 }
 
-variable "vpc_cidr_block" {}
-variable "subnet_cidr_block" {}
-variable "avail_zone" {}
-variable "env_prefix" {}
-variable "my_ip" {}
-variable "instance_type" {}
-variable "my_public_key" {}
-variable "ssh_private_key"{}
-
 resource "aws_vpc" "my_app_vpc" {
   cidr_block = var.vpc_cidr_block
+  enable_dns_hostnames = true 
 
   tags = {
     Name = "${var.env_prefix}-vpc"
@@ -106,7 +98,7 @@ resource "aws_key_pair" "ssh_key" {
   public_key = file("/home/anil_kumar/.ssh/id_ed25519.pub")
 }
 
-resource "aws_instance" "my_app_server" {
+resource "aws_instance" "my_app_server_one" {
   ami                         = data.aws_ami.latest_amazon_linux_image.id
   instance_type               = var.instance_type
   subnet_id                   = aws_subnet.my_app_subnet.id
@@ -116,26 +108,34 @@ resource "aws_instance" "my_app_server" {
   key_name                    = aws_key_pair.ssh_key.key_name
 
   tags = {
-    Name = "${var.env_prefix}-server"
-  }
-provisioner "local-exec" {
-    working_dir = "/home/anil_kumar/ansible-project"
-    command = <<EOT
-      sleep 60
-      ansible-playbook \
-        --inventory '${self.public_ip},' \
-        --private-key '/home/anil_kumar/.ssh/id_ed25519' \
-        --user ec2-user \
-        -e ansible_python_interpreter=/usr/bin/python3 \
-        deploy-docker-new.yaml
-    EOT
+    Name = "${var.env_prefix}-server-one"
   }
 }
 
-output "aws_ami_id" {
-  value = data.aws_ami.latest_amazon_linux_image.id
+resource "aws_instance" "my_app_server_two" {
+  ami                         = data.aws_ami.latest_amazon_linux_image.id
+  instance_type               = var.instance_type
+  subnet_id                   = aws_subnet.my_app_subnet.id
+  vpc_security_group_ids      = [aws_security_group.my_sg.id]
+  availability_zone           = var.avail_zone
+  associate_public_ip_address = true
+  key_name                    = aws_key_pair.ssh_key.key_name
+
+  tags = {
+    Name = "${var.env_prefix}-server-two"
+  }
 }
 
-output "ec2_public_ip" {
-  value = aws_instance.my_app_server.public_ip
+resource "aws_instance" "my_app_server_three" {
+  ami                         = data.aws_ami.latest_amazon_linux_image.id
+  instance_type               = var.instance_type
+  subnet_id                   = aws_subnet.my_app_subnet.id
+  vpc_security_group_ids      = [aws_security_group.my_sg.id]
+  availability_zone           = var.avail_zone
+  associate_public_ip_address = true
+  key_name                    = aws_key_pair.ssh_key.key_name
+
+  tags = {
+    Name = "${var.env_prefix}-server-three"
+  }
 }
