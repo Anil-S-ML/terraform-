@@ -13,8 +13,8 @@ public_subnet_cidr_block = [
 ]
 
 avail_zone = [
-  "ap-south-2a",
-  "ap-south-2b",
-  "ap-south-2c"
+  "ap-south-1a",
+  "ap-south-1b",
+  "ap-south-1c"
 ]
 

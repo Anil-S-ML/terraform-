@@ -13,30 +13,17 @@ module "eks" {
 
   enable_cluster_creator_admin_permissions = true
 
-   addons = {
-    coredns = {}
-    kube-proxy = {}
-    "vpc-cni" = {
-      before_compute = false
-    }
-  }
-  eks_managed_node_groups = {
-    dev = {
-      instance_types = ["t3.small"]
-      min_size       = 1
-      max_size       = 3
-      desired_size   = 2
-
-        iam_role_additional_policies = {
-        AmazonEKSWorkerNodePolicy            = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
-        AmazonEKS_CNI_Policy                 = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
-        AmazonEC2ContainerRegistryReadOnly   = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
-      }
-    }
-  }
 
   tags = {
     environment = "development"
     application = "myapp"
+  }
+  eks_managed_node_groups = {
+    worker1 = {
+      instance_types = ["t3.micro"]
+      min_size       = 1
+      max_size       = 3
+      desired_size   = 2
+    }
   }
 }
