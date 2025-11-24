@@ -125,17 +125,3 @@ resource "aws_instance" "my_app_server_two" {
     Name = "${var.env_prefix}-server-two"
   }
 }
-
-resource "aws_instance" "my_app_server_three" {
-  ami                         = data.aws_ami.latest_amazon_linux_image.id
-  instance_type               = var.instance_type
-  subnet_id                   = aws_subnet.my_app_subnet.id
-  vpc_security_group_ids      = [aws_security_group.my_sg.id]
-  availability_zone           = var.avail_zone
-  associate_public_ip_address = true
-  key_name                    = aws_key_pair.ssh_key.key_name
-
-  tags = {
-    Name = "${var.env_prefix}-server-three"
-  }
-}
